@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regalos para Mi Amor 💖</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #ffe4ec;
+      padding: 2rem;
+      text-align: center;
+    }
+    .hidden { display: none; }
+    .card {
+      background: white;
+      padding: 1rem;
+      margin: 1rem auto;
+      max-width: 300px;
+      border-radius: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    img { width: 100%; border-radius: 0.5rem; }
+    button {
+      background: #ec407a;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    input {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="login">
+    <h1>Bienvenida 💖</h1>
+    <input type="password" id="passwordInput" placeholder="Ingresa la clave" />
+    <br>
+    <button onclick="checkPassword()">Entrar</button>
+  </div>
+
+  <div id="catalog" class="hidden">
+    <h2>¡Hola amor! 💖 Tus puntos: <span id="pointsDisplay"></span></h2>
+    <button onclick="addPoints()">+10 puntos (secreto)</button>
+    <div id="rewardsContainer"></div>
+  </div>
+
+  <script>
+    const SECRET_PASSWORD = 'amor2025';
+    let points = parseInt(localStorage.getItem('puntos-amor')) || 100;
+    const rewards = [
+      { id: 1, title: 'Cena romántica', points: 50, image: 'images/cena.jpg' },
+      { id: 2, title: 'Día de spa', points: 80, image: 'images/spa.jpg' },
+      { id: 3, title: 'Película en casa', points: 30, image: 'images/pelicula.jpg' },
+    ];
+
+    function checkPassword() {
+      const input = document.getElementById('passwordInput').value;
+      if (input === SECRET_PASSWORD) {
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('catalog').classList.remove('hidden');
+        renderCatalog();
+      } else {
+        alert("Clave incorrecta 💔");
+      }
+    }
+
+    function renderCatalog() {
+      document.getElementById('pointsDisplay').textContent = points;
+      const container = document.getElementById('rewardsContainer');
+      container.innerHTML = '';
+      rewards.forEach(r => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${r.image}" alt="${r.title}">
+          <h3>${r.title}</h3>
+          <p>${r.points} puntos</p>
+          <button onclick="redeem(${r.id})" ${points < r.points ? 'disabled' : ''}>Canjear</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function redeem(id) {
+      const reward = rewards.find(r => r.id === id);
+      if (reward && points >= reward.points) {
+        points -= reward.points;
+        localStorage.setItem('puntos-amor', points);
+        renderCatalog();
+      }
+    }
+
+    function addPoints() {
+      points += 10;
+      localStorage.setItem('puntos-amor', points);
+      renderCatalog();
+    }
+  </script>
+</body>
+</html>
